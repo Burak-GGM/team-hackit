@@ -17,6 +17,10 @@ code, docs and the page are in English. Code freeze Sun 25 Oct 2026 13:00 CET, L
   final. Here `.env` sets `ARENA_RELEASE=/home/burak/Belgeler/hackathon/tacto/release-sunday`; on another
   machine `buyer data` puts it next to the package.
 
+- **Online Showcase** (GitHub Pages): https://burak-ggm.github.io/team-hackit/ from branch `gh-pages`
+  (checkout `../team-hackit-pages`). Update: `../team-hackit/.venv/bin/buyer showcase --export . --sessions
+  <recorded sessions to add, or none>` inside it, commit, push `gh-pages`; Pages rebuilds in about a minute.
+
 ## Files
 | Path | Role |
 |---|---|

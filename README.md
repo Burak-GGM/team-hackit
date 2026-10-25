@@ -58,6 +58,9 @@ It plays the bundled real runs in `buyer/showcase/` (D01 deal 0.940 by default, 
 works after the Live Final and offline; `buyer showcase --list` / `--save <session>` picks or freezes
 another run. Handoff notes for agents: `AGENT_SHOWCASE.md`.
 
+**Online Showcase:** https://burak-ggm.github.io/team-hackit/ - the Showcase alone as a static site
+(GitHub Pages, branch `gh-pages`), built with `buyer showcase --export <dir>`.
+
 ## Tests
 
 ```sh

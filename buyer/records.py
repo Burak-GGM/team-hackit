@@ -78,7 +78,7 @@ def report(folder=None, set_="practice"):
             by_case[d["case"]].append(score)
     if not by_case:
         return "no finished runs in logs/runs"
-    lines = [f"{'case':10} {'n':>2} {'mean':>6} {'best':>6} {'PC batch':>8} {'PC best':>8}  scores"]
+    lines = [f"{'case':10} {'n':>2} {'mean':>6} {'best':>6} {'ref batch':>9} {'ref best':>8}  scores"]
     means, bests, refs_b, refs_x = [], [], [], []
     for cid in sorted(by_case):
         s = by_case[cid]

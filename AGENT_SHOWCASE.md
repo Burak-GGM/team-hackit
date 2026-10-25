@@ -1,18 +1,17 @@
-# Agent handoff: HackIt Buyer Live + Showcase (branch `proposal-1-ui`)
+# Agent handoff: HackIt Buyer (repo `Burak-GGM/team-hackit`)
 
 Read this first if you continue this work. Owner: Burak (team Hack It). Chat with Burak in Turkish;
 code, docs and the page are in English. Code freeze Sun 25 Oct 2026 13:00 CET, Live Final 13:30.
 
-## What this branch is
-- `proposal-1` (Jose, pushed from another PC) is the belief-based buyer in `buyer/`.
-- `proposal-1-ui` = `proposal-1` + the watch UI ("HackIt Buyer Live") + the Showcase.
-- **Sync rule:** whenever `origin/proposal-1` moves, merge it into `proposal-1-ui`
-  (`git fetch origin && git merge origin/proposal-1`), run the gate, push. Never push to `proposal-1`.
-  Our changes to Jose's files are only small telemetry hooks (`buyer/policy.py`, `buyer/runner.py`,
-  `buyer/cli.py`), so conflicts should stay small; keep his logic, re-add the hooks.
-- Checkout: `/home/burak/Belgeler/hackathon/tacto/hackit-p1-ui` (own clone; never edit `hackit-v2`).
-- Mirror: Burak's own private repo https://github.com/Burak-GGM/team-hackit (remote `team`, branch
-  `main` = `proposal-1-ui`). After every push of `proposal-1-ui`, also `git push team proposal-1-ui:main`.
+## Where we work
+- **This repo is the working repo** (https://github.com/Burak-GGM/team-hackit, branch `main`, public).
+  Checkout: `/home/burak/Belgeler/hackathon/tacto/team-hackit` (own `.venv`, `.env` never committed).
+- The agent is **HackIt Buyer** (`buyer/`), with the watch UI "HackIt Buyer Live" and the jury Showcase.
+- Upstream: Jose still pushes the negotiation logic to `proposal-1` in the team's other repo
+  (checkout `../hackit-p1-ui`, branch `proposal-1-ui` there = `proposal-1` + this UI). To bring a new
+  `proposal-1` commit here: `git -C ../hackit-p1-ui fetch origin && git -C ../hackit-p1-ui diff OLD NEW |
+  git apply --reject`, then `python3 ../team-hackit-sync/scrub.py .` (naming and docs rules; it must
+  print `clean`), the gate, commit, push.
 - Gate: `.venv/bin/pytest -q && .venv/bin/ruff check . && .venv/bin/ruff format --check .`
 
 ## Files
@@ -56,7 +55,7 @@ ceiling), `close` (accept / walk away), `result` (C open vs C deal vs alternativ
 system map (ids in docs/liveview-contract.md) to animate a data packet along.
 
 ## Status (update as you go)
-- [x] proposal-1-ui branch, telemetry, watch UI backend + page, tests, pushed
+- [x] telemetry, watch UI backend + page, tests
 - [x] checked: nothing of `proposal-1` / `belief-buyer` missing (belief-buyer is an older proposal-1)
 - [x] old hackit2 UI features: ported except hackit2-only ones (nine-agent research, buyer boundaries,
       observer sessions, model spend, pulled arena sessions) - this agent has none of them

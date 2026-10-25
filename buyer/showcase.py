@@ -173,7 +173,9 @@ def step(kind, title, caption, flow=(), supplier=None, rnd=None, **data):
 
 def intro_step(head, suppliers, result):
     need, years = head.get("need_per_year"), head.get("horizon_years")
-    volume = f"{need:,} units a year for {years} years" if need and years else "the yearly need"
+    volume = (
+        f"{need:,} units a year for {years:g} year{'s' if years != 1 else ''}" if need and years else "the yearly need"
+    )
     alt = head.get("c_alt") or result.get("c_alt")
     caption = (
         f"{head.get('title') or 'A sourcing case'}. Hollerau buys {volume}. "

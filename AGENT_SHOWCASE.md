@@ -13,6 +13,9 @@ code, docs and the page are in English. Code freeze Sun 25 Oct 2026 13:00 CET, L
   git apply --reject`, then `python3 ../team-hackit-sync/scrub.py .` (naming and docs rules; it must
   print `clean`), the gate, commit, push.
 - Gate: `.venv/bin/pytest -q && .venv/bin/ruff check . && .venv/bin/ruff format --check .`
+- **Sunday release:** the log line `data package ... (release: <path>)` must not say `None` before the
+  final. Here `.env` sets `ARENA_RELEASE=/home/burak/Belgeler/hackathon/tacto/release-sunday`; on another
+  machine `buyer data` puts it next to the package.
 
 ## Files
 | Path | Role |

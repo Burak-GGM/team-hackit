@@ -481,3 +481,65 @@ def storyboard(live_runs, session=None):
             seen.add(c["session"])
             choices.append(c)
     return {"found": True, **story(events, choice["source"], choices)}
+
+
+# -- a static site of the Showcase alone (GitHub Pages) ------------------------------------------------
+PAGE = Path(__file__).with_name("liveview.html")
+# Served without the local server: the page's /api calls are answered from the exported stories, the
+# control room is hidden and the Showcase opens at once and cannot be closed.
+STATIC_SHIM = """<style>body>header,.layout,#scClose{display:none!important}</style>
+<script>
+(() => {
+  const real = window.fetch.bind(window);
+  const json = (body) =>
+    Promise.resolve(new Response(JSON.stringify(body), {headers: {"Content-Type": "application/json"}}));
+  window.fetch = (input, init) => {
+    const url = new URL(String(input), location.href);
+    if (url.pathname.endsWith("/api/showcase")) {
+      const session = url.searchParams.get("session");
+      return real("showcase/" + encodeURIComponent(session || "default") + ".json", init);
+    }
+    if (url.pathname.endsWith("/api/cases")) return json([]);
+    if (url.pathname.includes("/api/")) return json({});
+    return real(input, init);
+  };
+})();
+</script>
+"""
+STATIC_START = "<script>openShowcase();window.closeShowcase=()=>{};</script>"
+
+
+def static_page(html):
+    """The watch UI page turned into the Showcase-only static page."""
+    html = html.replace(
+        "<title>HackIt Buyer Live · Negotiation control room</title>", "<title>HackIt Buyer · Showcase</title>", 1
+    )
+    html = html.replace(" · ESC close", "")
+    i = html.index("<script>")
+    html = html[:i] + STATIC_SHIM + html[i:]
+    j = html.rindex("</body>")
+    return html[:j] + STATIC_START + html[j:]
+
+
+def export(folder, live_runs, sessions=None):
+    """Write the static Showcase site to `folder`: index.html and one story JSON per run (bundled runs
+    first, then recorded ones; `sessions` limits the recorded ones). Returns the stories written."""
+    folder = Path(folder)
+    (folder / "showcase").mkdir(parents=True, exist_ok=True)
+    chosen, seen = [], set()
+    for choice, events in runs(live_runs):
+        keep = choice["source"] == "bundled" or sessions is None or choice["session"] in sessions
+        if keep and choice["session"] not in seen:
+            seen.add(choice["session"])
+            chosen.append((choice, events))
+    choices = [c for c, _ in chosen]
+    for choice, events in chosen:
+        board = {"found": True, **story(events, choice["source"], choices)}
+        (folder / "showcase" / f"{choice['session']}.json").write_text(json.dumps(board, default=str), encoding="utf-8")
+    default, events = pick(chosen)
+    if default:
+        board = {"found": True, **story(events, default["source"], choices)}
+        (folder / "showcase" / "default.json").write_text(json.dumps(board, default=str), encoding="utf-8")
+    (folder / "index.html").write_text(static_page(PAGE.read_text(encoding="utf-8")), encoding="utf-8")
+    (folder / ".nojekyll").write_text("", encoding="utf-8")
+    return choices

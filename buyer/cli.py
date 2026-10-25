@@ -86,6 +86,8 @@ def main(argv=None):
     s.add_argument("--list", action="store_true", help="every run the Showcase can play")
     s.add_argument("--save", default="", help="session to freeze as a bundled showcase run")
     s.add_argument("--name", default="default", help="bundled name (default: the one the button opens)")
+    s.add_argument("--export", default="", help="write the static Showcase site (GitHub Pages) to this folder")
+    s.add_argument("--sessions", default="", help="with --export: recorded sessions to include (comma list)")
     g = sub.add_parser("gui")
     g.add_argument("--port", type=int, default=8790)
     g.add_argument("--offline", action="store_true", help="never contact the arena")
@@ -99,6 +101,11 @@ def main(argv=None):
     if args.cmd == "showcase":
         from . import liveview, showcase
 
+        if args.export:
+            only = set(filter(None, args.sessions.split(","))) or None
+            for choice in showcase.export(args.export, liveview.live_runs(), only):
+                print(json.dumps(choice, default=str))
+            return
         runs = showcase.runs(liveview.live_runs())
         if args.save:
             hit = [events for choice, events in runs if args.save in (choice["session"], choice["name"])]

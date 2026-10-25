@@ -1,6 +1,8 @@
 """The Showcase storyboard: built from a recorded sim run, every step carries a caption and map edges,
 the main thread's rounds are complete, and a bundled run is what the button opens by default."""
 
+import json
+
 from buyer import config, liveview, showcase
 from buyer.runner import play_batch
 
@@ -47,3 +49,15 @@ def test_no_runs_at_all(monkeypatch, tmp_path):
     monkeypatch.setitem(liveview.CONFIG, "live", tmp_path / "empty")
     monkeypatch.setattr(showcase, "BUNDLED", tmp_path / "none")
     assert liveview.showcase_story() == {"found": False, "steps": [], "choices": []}
+
+
+def test_static_site_export(tmp_path):
+    """The GitHub Pages site: the page opens the Showcase on its own and every run has its story."""
+    choices = showcase.export(tmp_path, [])
+    assert choices and all(c["source"] == "bundled" for c in choices)
+    html = (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert "openShowcase();" in html and 'real("showcase/"' in html
+    assert html.index("window.fetch = ") < html.index("function openShowcase")
+    for name in ["default", *(c["session"] for c in choices)]:
+        story = json.loads((tmp_path / "showcase" / f"{name}.json").read_text(encoding="utf-8"))
+        assert story["found"] and story["steps"] and story["choices"] == choices
